@@ -43,6 +43,7 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
     boolean isPaused = false; // utk cek kalau pause
     int score = 0; // utk hitung skor
     JLabel scoreLabel; // jlabel utk score
+    JButton playButton;
     Font gameFont = new Font("Arial", Font.BOLD, 32); // utk font game
 
     // constructor
@@ -56,9 +57,18 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
         scoreLabel = new JLabel("Score: 0");
         scoreLabel.setFont(gameFont);
         scoreLabel.setForeground(Color.white);
-        scoreLabel.setBounds(120, 20, 130, 40);
+        scoreLabel.setBounds(120, 20, 230, 40);
         setLayout(null);
         add(scoreLabel);
+
+        // instansiasi playbutton
+        playButton = new JButton("PLAY");
+        playButton.setSize(120, 40);
+        playButton.setFont(gameFont);
+        playButton.setBackground(Color.green);
+        playButton.setBounds(120, 420,130, 40);
+        setLayout(null);
+        add(playButton);
 
         // load images;
         backgroundImage = new ImageIcon(getClass().getResource("Assets/background.png")).getImage();
@@ -78,10 +88,22 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
                 placePipes();
             }
         });
-        pipeSpawner.start();
 
         gameLoop = new Timer(1000/60, this);
-        gameLoop.start();
+
+        playButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                playButton.setVisible(false); // sembunyikan tombol setelah ditekan
+                gameOver = false;
+                isPaused = false;
+                score = 0;
+                player.setPosY(playerStartPosY);
+                player.setVelocityY(0);
+                gameLoop.start();
+                pipeSpawner.start();
+            }
+        });
     }
 
     public void placePipes(){
@@ -146,8 +168,18 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
         }
 
         if (isPaused && !gameOver) {
-            g.setColor(Color.YELLOW);
+            g.setColor(Color.WHITE);
             g.drawString("PAUSED", frameWidth / 3, frameHeight / 2);
+        }
+
+        if(playButton.isVisible()){
+            g.setColor(Color.WHITE);
+            g.setFont(gameFont);
+            g.drawString("FLAPPY BIRB", frameWidth / 4, frameHeight / 2);
+            g.setFont(new Font("Arial", Font.PLAIN, 20));
+            g.drawString("How to play:", frameWidth / 4 + (frameWidth/24), frameHeight / 2 + 40);
+            g.drawString("Press SPACE to play", frameWidth / 4 + (frameWidth/24), frameHeight / 2 + 60);
+            g.drawString("Press P to pause", frameWidth / 4 + (frameWidth/24), frameHeight / 2 + 80);
         }
     }
 
@@ -164,6 +196,7 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
             // ubah status pipe dan tambahkan skor
             if (!pipe.isPassed() && pipe.getImage() == upperPipeImage && (pipe.getPosX() + pipe.getWidth()) < player.getPosX()) {
                 score++;
+                System.out.println(score);
                 pipe.setPassed(true); // Tambahkan method ini ke Pipe class
             }
         }
@@ -199,8 +232,20 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
         if(e.getKeyCode() == KeyEvent.VK_SPACE){
             player.setVelocityY(-10);
         }
+        // utk restart
         if(e.getKeyCode() == KeyEvent.VK_R && gameOver){
             restartGame();
+        }
+        // utk pause
+        if (e.getKeyCode() == KeyEvent.VK_P && !gameOver) {
+            isPaused = !isPaused;
+            if (isPaused) {
+                gameLoop.stop();
+                pipeSpawner.stop();
+            } else {
+                gameLoop.start();
+                pipeSpawner.start();
+            }
         }
     }
 
