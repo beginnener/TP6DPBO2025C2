@@ -116,14 +116,7 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
 
     public void draw(Graphics g){
         g.drawImage(backgroundImage, 0, 0, frameWidth, frameHeight, null);
-        g.drawImage(player.getImage(), player.getPosX(), player.getPosY(), player.getWidth(), player.getHeight()
-        , null);
-
-        // untuk tampilan score
-        g.setColor(Color.WHITE);
-        g.setFont(gameFont);
-
-        g.drawString("Score: " + score, frameWidth/3, 40);
+        g.drawImage(player.getImage(), player.getPosX(), player.getPosY(), player.getWidth(), player.getHeight(), null);
 
         // tampilkan pipe
         //System.out.println("Banyak pipe: " + pipes.size());
@@ -131,6 +124,11 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
             Pipe pipe = pipes.get(i);
             g.drawImage(pipe.getImage(), pipe.getPosX(), pipe.getPosY(), pipe.getWidth(), pipe.getHeight(), null);
         }
+
+        // untuk tampilan score
+        g.setColor(Color.WHITE);
+        g.setFont(gameFont);
+        g.drawString("Score: " + score, frameWidth/3, 40);
 
         if (gameOver) {
             g.setColor(Color.RED);
@@ -155,10 +153,10 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
             Pipe pipe = pipes.get(i);
             pipe.setPosX(pipe.getPosX() + pipe.getVelocityX());
 
-            // Hapus pipe jika sudah keluar dari layar
-            if (pipe.getPosX() + pipe.getWidth() < 0) {
-                pipes.remove(i);
-                i--; // Kurangi i karena kita menghapus elemen
+            // ubah status pipe dan tambahkan skor
+            if (!pipe.isPassed() && pipe.getImage() == upperPipeImage && (pipe.getPosX() + pipe.getWidth()) < player.getPosX()) {
+                score++;
+                pipe.setPassed(true); // Tambahkan method ini ke Pipe class
             }
         }
     }
