@@ -33,9 +33,16 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
 
     // timer
     Timer gameLoop;
+    Timer pipeSpawner;
 
     // gravitasi
     int gravity = 1;
+
+    // atribut game tambahan
+    boolean gameOver = false; // utk cek kalau gameover
+    boolean isPaused = false; // utk cek kalau pause
+    int score = 0; // utk hitung skor
+    Font gameFont = new Font("Arial", Font.BOLD, 32); // utk font game
 
     // constructor
     public FlappyBirb(){
@@ -55,12 +62,21 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
         // instansiasi pipe
         pipes = new ArrayList<Pipe>();
 
+        // untuk menampilkan pipe
+        pipeSpawner = new Timer(1500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                placePipes();
+            }
+        });
+        pipeSpawner.start();
+
         gameLoop = new Timer(1000/60, this);
         gameLoop.start();
     }
 
     public void placePipes(){
-        int randomPosY = (int) (pipeStartPosY - pipeHeight/4 - Math.random() + pipeHeight/2);
+        int randomPosY = (int) (pipeStartPosY - pipeHeight/4 - Math.random() * pipeHeight/2);
         int openingSpace = frameHeight/4;
 
         Pipe upperPipe = new Pipe(pipeStartPosX, randomPosY, pipeWidth, pipeHeight, upperPipeImage);
@@ -68,6 +84,34 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
 
         Pipe lowerPipe = new Pipe(pipeStartPosX, (randomPosY + openingSpace + pipeHeight), pipeWidth, pipeHeight, lowerPipeImage);
         pipes.add(lowerPipe);
+
+        System.out.println("upperPipe spawned at: " + upperPipe.getPosY() + " lowerPipe spawned at: " + lowerPipe.getPosY());
+    }
+
+    public void checkCollision() {
+        Rectangle playerRect = new Rectangle(player.getPosX(), player.getPosY(), player.getWidth(), player.getHeight());
+
+        // pakai enhanced for (biar lebih rapih aja)
+        for (Pipe pipe : pipes) {
+            Rectangle pipeRect = new Rectangle(pipe.getPosX(), pipe.getPosY(), pipe.getWidth(), pipe.getHeight());
+            if (playerRect.intersects(pipeRect)) {
+                gameOver = true;
+                gameLoop.stop();
+                pipeSpawner.stop();
+            }
+        }
+
+        // cek kalau burung jatuh ke bawah
+        if (player.getPosY() > frameHeight) {
+            gameOver = true;
+            gameLoop.stop();
+            pipeSpawner.stop();
+        }
+    }
+
+    public void paintComponent(Graphics g){ // dipanggil otomatis setiap repaint() dipanggil
+        super.paintComponent(g);
+        draw(g);
     }
 
     public void draw(Graphics g){
@@ -75,7 +119,9 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
         g.drawImage(player.getImage(), player.getPosX(), player.getPosY(), player.getWidth(), player.getHeight()
         , null);
 
-        for (int i = 0; i < pipes.size(); i++){
+        // tampilkan pipe
+        //System.out.println("Banyak pipe: " + pipes.size());
+        for (int i = 0; i < pipes.size(); i++) {
             Pipe pipe = pipes.get(i);
             g.drawImage(pipe.getImage(), pipe.getPosX(), pipe.getPosY(), pipe.getWidth(), pipe.getHeight(), null);
         }
@@ -86,16 +132,26 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
         player.setPosY(player.getPosY() + player.getVelocityY());
         player.setPosY(Math.max(player.getPosY(), 0));
 
+        // atur posisi pipa
         for(int i = 0; i < pipes.size(); i++){
             Pipe pipe = pipes.get(i);
             pipe.setPosX(pipe.getPosX() + pipe.getVelocityX());
+
+            // Hapus pipe jika sudah keluar dari layar
+            if (pipe.getPosX() + pipe.getWidth() < 0) {
+                pipes.remove(i);
+                i--; // Kurangi i karena kita menghapus elemen
+            }
         }
     }
 
     @Override
-    public void actionPerformed(ActionEvent e){
-        move();
-        repaint();
+    public void actionPerformed(ActionEvent e){ // per 1000/60 ms method ini dipanggil otomatis oleh sistem (dar gameloop.star())
+        if(!gameOver && !isPaused){
+            move();
+            checkCollision(); // cek collision setiap habis move
+            repaint();
+        }
     }
 
     @Override

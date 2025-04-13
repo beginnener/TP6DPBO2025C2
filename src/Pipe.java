@@ -15,7 +15,7 @@ public class Pipe {
         this.width = width;
         this.height = height;
         this.image = image;
-        this.velocityX = 0;
+        this.velocityX = -4;
         this.passed = false;
     }
 
