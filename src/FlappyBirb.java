@@ -42,6 +42,7 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
     boolean gameOver = false; // utk cek kalau gameover
     boolean isPaused = false; // utk cek kalau pause
     int score = 0; // utk hitung skor
+    JLabel scoreLabel; // jlabel utk score
     Font gameFont = new Font("Arial", Font.BOLD, 32); // utk font game
 
     // constructor
@@ -50,6 +51,14 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
         setFocusable(true);
         //setBackground(Color.BLUE);
         addKeyListener(this);
+
+        // instansiasi scorelabel
+        scoreLabel = new JLabel("Score: 0");
+        scoreLabel.setFont(gameFont);
+        scoreLabel.setForeground(Color.white);
+        scoreLabel.setBounds(120, 20, 130, 40);
+        setLayout(null);
+        add(scoreLabel);
 
         // load images;
         backgroundImage = new ImageIcon(getClass().getResource("Assets/background.png")).getImage();
@@ -126,12 +135,11 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
         }
 
         // untuk tampilan score
-        g.setColor(Color.WHITE);
-        g.setFont(gameFont);
-        g.drawString("Score: " + score, frameWidth/3, 40);
+        scoreLabel.setText("Score: " + score);
 
         if (gameOver) {
             g.setColor(Color.RED);
+            g.setFont(gameFont);
             g.drawString("GAME OVER", frameWidth / 4, frameHeight / 2);
             g.setFont(new Font("Arial", Font.PLAIN, 20));
             g.drawString("Press R to Restart", frameWidth / 4 + (frameWidth/24), frameHeight / 2 + 40);
