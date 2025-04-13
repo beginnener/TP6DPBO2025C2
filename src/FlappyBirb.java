@@ -119,11 +119,29 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
         g.drawImage(player.getImage(), player.getPosX(), player.getPosY(), player.getWidth(), player.getHeight()
         , null);
 
+        // untuk tampilan score
+        g.setColor(Color.WHITE);
+        g.setFont(gameFont);
+
+        g.drawString("Score: " + score, frameWidth/3, 40);
+
         // tampilkan pipe
         //System.out.println("Banyak pipe: " + pipes.size());
         for (int i = 0; i < pipes.size(); i++) {
             Pipe pipe = pipes.get(i);
             g.drawImage(pipe.getImage(), pipe.getPosX(), pipe.getPosY(), pipe.getWidth(), pipe.getHeight(), null);
+        }
+
+        if (gameOver) {
+            g.setColor(Color.RED);
+            g.drawString("GAME OVER", frameWidth / 4, frameHeight / 2);
+            g.setFont(new Font("Arial", Font.PLAIN, 20));
+            g.drawString("Press R to Restart", frameWidth / 4 + (frameWidth/24), frameHeight / 2 + 40);
+        }
+
+        if (isPaused && !gameOver) {
+            g.setColor(Color.YELLOW);
+            g.drawString("PAUSED", frameWidth / 3, frameHeight / 2);
         }
     }
 
@@ -145,6 +163,17 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
         }
     }
 
+    public void restartGame() {
+        gameOver = false;
+        isPaused = false;
+        score = 0;
+        player.setPosY(playerStartPosY);
+        player.setVelocityY(0);
+        pipes.clear();
+        gameLoop.start();
+        pipeSpawner.start();
+    }
+
     @Override
     public void actionPerformed(ActionEvent e){ // per 1000/60 ms method ini dipanggil otomatis oleh sistem (dar gameloop.star())
         if(!gameOver && !isPaused){
@@ -163,6 +192,9 @@ public class FlappyBirb extends JPanel implements ActionListener, KeyListener {
     public void keyPressed(KeyEvent e){
         if(e.getKeyCode() == KeyEvent.VK_SPACE){
             player.setVelocityY(-10);
+        }
+        if(e.getKeyCode() == KeyEvent.VK_R && gameOver){
+            restartGame();
         }
     }
 
