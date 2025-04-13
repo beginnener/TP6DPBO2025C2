@@ -70,8 +70,9 @@ Merupakan kelas untuk objek player. Berisi,
 - `image` : gambar burung.
 
 # Screenshot Program
-![Screenshot 2025-04-13 200531](https://github.com/user-attachments/assets/7fa9183a-a0f9-4c48-936e-2bbdb748853f)
-![Screenshot 2025-04-13 200544](https://github.com/user-attachments/assets/d760c384-1e46-4c4e-b55e-aa256bd111c4)
-![Screenshot 2025-04-13 201509](https://github.com/user-attachments/assets/f18069ee-0b37-4076-bd7f-e729c8fce020)
-![Screenshot 2025-04-13 201601](https://github.com/user-attachments/assets/d44c6cf3-79e8-4b70-bf3d-88184478df00)
-
+<div style="display: flex; overflow-x: auto; gap: 10px; padding: 10px 0;">
+  <img src="https://github.com/user-attachments/assets/7fa9183a-a0f9-4c48-936e-2bbdb748853f" alt="Menu Awal" width="300" />
+  <img src="https://github.com/user-attachments/assets/d760c384-1e46-4c4e-b55e-aa256bd111c4" alt="Gameplay" width="300" />
+  <img src="https://github.com/user-attachments/assets/f18069ee-0b37-4076-bd7f-e729c8fce020" alt="Game Over" width="300" />
+  <img src="https://github.com/user-attachments/assets/d44c6cf3-79e8-4b70-bf3d-88184478df00" alt="Restart Game" width="300" />
+</div>
